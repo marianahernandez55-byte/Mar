@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business English Study Cards</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0f1b2d;
+    --navy-mid: #1a2d45;
+    --navy-light: #243b55;
+    --teal: #00c9b1;
+    --teal-dim: #009e8e;
+    --gold: #f0b429;
+    --slate: #8fa3b8;
+    --white: #f0f4f8;
+    --card-bg: #172436;
+    --card-border: #263d56;
+    --tag-interview: #5b4fcf;
+    --tag-negotiation: #1a7f6e;
+    --tag-terms: #0e6fb5;
+    --tag-idioms: #b5460e;
+    --radius: 18px;
+    --shadow: 0 8px 40px rgba(0,0,0,0.45);
+  }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--card-border);
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .logo span { color: var(--white); }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 180px;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  #search {
+    width: 100%;
+    background: var(--navy-light);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    color: var(--white);
+    font-family: inherit;
+    font-size: 0.88rem;
+    padding: 0.55rem 0.75rem 0.55rem 2.3rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #search:focus { border-color: var(--teal); }
+  #search::placeholder { color: var(--slate); }
+
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--card-border);
+    background: var(--navy-mid);
+  }
+  .filter-btn {
+    background: var(--navy-light);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    color: var(--slate);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 1rem;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--teal); color: var(--white); }
+  .filter-btn.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--navy);
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 3rem;
+    gap: 1.5rem;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 680px;
+  }
+  .progress-label {
+    font-size: 0.82rem;
+    color: var(--slate);
+    white-space: nowrap;
+    min-width: 90px;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 5px;
+    background: var(--navy-light);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+
+  .card-stage {
+    perspective: 1200px;
+    width: 100%;
+    max-width: 680px;
+    height: 340px;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+    transform-style: preserve-3d;
+  }
+  .card-stage.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1.8rem 2rem;
+    overflow: hidden;
+  }
+  .card-back { transform: rotateY(180deg); }
+
+  .card-tag {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 0.22rem 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+    width: fit-content;
+  }
+  .tag-terms { background: rgba(14,111,181,0.18); color: #5bb8ff; border: 1px solid rgba(14,111,181,0.35); }
+  .tag-idioms { background: rgba(181,70,14,0.18); color: #ffaa7a; border: 1px solid rgba(181,70,14,0.35); }
+  .tag-negotiation { background: rgba(26,127,110,0.18); color: #4de8d1; border: 1px solid rgba(26,127,110,0.35); }
+  .tag-interview { background: rgba(91,79,207,0.18); color: #b0a7ff; border: 1px solid rgba(91,79,207,0.35); }
+
+  .card-hint {
+    font-size: 0.73rem;
+    color: var(--slate);
+    margin-top: auto;
+    text-align: center;
+    letter-spacing: 0.03em;
+  }
+
+  .front-term {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .back-content {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--card-border) transparent;
+  }
+  .back-content::-webkit-scrollbar { width: 4px; }
+  .back-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 99px; }
+
+  .back-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 0.3rem;
+    margin-top: 0.85rem;
+  }
+  .back-label:first-child { margin-top: 0; }
+  .back-text {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #ccdaea;
+  }
+  .back-example {
+    font-size: 0.88rem;
+    color: var(--gold);
+    font-style: italic;
+    line-height: 1.55;
+    border-left: 2px solid var(--gold);
+    padding-left: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 680px;
+  }
+  .btn {
+    background: var(--navy-light);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    color: var(--white);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 0.65rem 1.3rem;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn:hover { border-color: var(--teal); color: var(--teal); }
+  .btn-flip {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--navy);
+    font-weight: 600;
+  }
+  .btn-flip:hover { background: var(--teal-dim); border-color: var(--teal-dim); color: var(--navy); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .no-results {
+    text-align: center;
+    color: var(--slate);
+    font-size: 1rem;
+    padding: 3rem 1rem;
+  }
+
+  @media (max-width: 520px) {
+    .card-stage { height: 300px; }
+    .card-face { padding: 1.3rem 1.2rem; }
+    header { padding: 0.9rem 1rem; }
+    .filter-bar { padding: 0.75rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Business<span>English</span> Study</div>
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="search" type="text" placeholder="Search cards…" autocomplete="off">
+  </div>
+</header>
+
+<div class="filter-bar">
+  <button class="filter-btn active" data-cat="all">All</button>
+  <button class="filter-btn" data-cat="terms">Business Terms</button>
+  <button class="filter-btn" data-cat="idioms">Business Idioms</button>
+  <button class="filter-btn" data-cat="negotiation">Negotiation</button>
+  <button class="filter-btn" data-cat="interview">Job Interview</button>
+</div>
+
+<main>
+  <div class="progress-row">
+    <div class="progress-label" id="prog-label">Card 1 of 1</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="card-stage" id="card-stage">
+    <div class="card-inner" id="card-inner">
+      <div class="card-face card-front" id="card-front">
+        <div class="card-tag" id="front-tag"></div>
+        <div class="front-term" id="front-term"></div>
+        <div class="card-hint">Tap or click to reveal answer</div>
+      </div>
+      <div class="card-face card-back" id="card-back">
+        <div class="card-tag" id="back-tag"></div>
+        <div class="back-content" id="back-content"></div>
+        <div class="card-hint">Tap or click to flip back</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="btn-prev">← Prev</button>
+    <button class="btn btn-flip" id="btn-flip">Flip</button>
+    <button class="btn" id="btn-next">Next →</button>
+    <button class="btn" id="btn-random">⇌ Random</button>
+  </div>
+</main>
+
+<script>
+const ALL_CARDS = [
+  // ─── BUSINESS TERMS ──────────────────────────────────────────────
+  { cat: "terms", front: "Revenue", back: { def: "The total amount of money a company earns from selling products or services.", ex: "A bakery makes $500 in sales in one day — that is its revenue." } },
+  { cat: "terms", front: "Profit", back: { def: "The money a company keeps after paying all its costs and expenses.", ex: "If a store earns $1,000 and spends $700, its profit is $300." } },
+  { cat: "terms", front: "Loss", back: { def: "When a business's expenses are higher than its revenue.", ex: "If a café earns $400 but spends $600, it has a loss of $200." } },
+  { cat: "terms", front: "Expenses", back: { def: "All the costs required to run a business.", ex: "Rent, salaries, and electricity are common expenses." } },
+  { cat: "terms", front: "Budget", back: { def: "A plan showing how much money will be earned and spent, or the money available for certain actions.", ex: "A company creates a monthly budget to avoid overspending." } },
+  { cat: "terms", front: "Cash Flow", back: { def: "The movement of money coming in and going out of a business.", ex: "Receiving payments increases cash flow; paying bills decreases it." } },
+  { cat: "terms", front: "Investment", back: { def: "Money put into a business or project to earn more in the future.", ex: "Buying new machines to increase production." } },
+  { cat: "terms", front: "Stakeholders", back: { def: "Anyone affected by a company's decisions or operations.", ex: "Employees, customers, suppliers, and investors are stakeholders." } },
+  { cat: "terms", front: "Shareholder", back: { def: "A person or company that owns shares (parts) of a business.", ex: "Someone who buys stocks from Apple becomes a shareholder." } },
+  { cat: "terms", front: "Asset", back: { def: "Something valuable a business owns.", ex: "Computers, buildings, vehicles, and cash are assets." } },
+  { cat: "terms", front: "Liability", back: { def: "Money a company owes to others.", ex: "Loans from the bank are liabilities." } },
+  { cat: "terms", front: "Equity", back: { def: "The value of ownership in a company after liabilities are removed.", ex: "If a company has $100,000 in assets and $40,000 in liabilities, equity is $60,000." } },
+  { cat: "terms", front: "Market", back: { def: "A group of buyers and sellers interacting to exchange goods or services.", ex: "The smartphone market includes Apple, Samsung, Xiaomi, etc." } },
+  { cat: "terms", front: "Target Market", back: { def: "The specific group of people a business aims to sell to.", ex: "A baby clothing brand targets new parents." } },
+  { cat: "terms", front: "Brand", back: { def: "The identity of a company, including its name, logo, and reputation.", ex: "Nike's brand includes its swoosh logo and 'Just Do It' message." } },
+  { cat: "terms", front: "Branding", back: { def: "Actions that create and strengthen a company's brand.", ex: "Using consistent colors and messaging across ads." } },
+  { cat: "terms", front: "Marketing", back: { def: "Activities to promote a product or service and attract customers.", ex: "Social media ads, posters, and discounts are marketing tools." } },
+  { cat: "terms", front: "Advertising", back: { def: "Paid communication to inform or persuade customers.", ex: "A YouTube ad showing a new phone." } },
+  { cat: "terms", front: "Customer Service", back: { def: "Support provided to customers before, during, and after a purchase.", ex: "Helping a customer return a defective product." } },
+  { cat: "terms", front: "Client", back: { def: "A person who receives professional services.", ex: "A business lawyer works with clients, not customers." } },
+  { cat: "terms", front: "Consumer", back: { def: "The final person who uses a product.", ex: "Buying bread to eat makes you a consumer." } },
+  { cat: "terms", front: "Product", back: { def: "A physical item a business sells.", ex: "Shoes, phones, and cars are products." } },
+  { cat: "terms", front: "Service", back: { def: "Work done for a customer instead of a physical item.", ex: "Haircuts, cleaning services, or consulting." } },
+  { cat: "terms", front: "Innovation", back: { def: "Creating new ideas, products, or methods.", ex: "Electric cars are examples of innovation." } },
+  { cat: "terms", front: "Entrepreneur", back: { def: "A person who starts and manages a business.", ex: "Someone who opens a small restaurant." } },
+  { cat: "terms", front: "Startup", back: { def: "A new business focused on fast growth and new ideas.", ex: "A company developing a new app." } },
+  { cat: "terms", front: "Business Model", back: { def: "How a company plans to make money.", ex: "Platforms like Netflix use a subscription business model." } },
+  { cat: "terms", front: "E-commerce", back: { def: "Buying and selling goods online.", ex: "Shopping on Amazon or Mercado Libre." } },
+  { cat: "terms", front: "Digital Marketing", back: { def: "Promoting products using online tools.", ex: "Posting ads on Instagram." } },
+  { cat: "terms", front: "SEO (Search Engine Optimization)", back: { def: "Improving a website so it appears higher in search results.", ex: "Using keywords to get a website on the first page of Google." } },
+  { cat: "terms", front: "KPIs (Key Performance Indicators)", back: { def: "Important numbers that show how well a business is doing.", ex: "Monthly sales or customer satisfaction scores." } },
+  { cat: "terms", front: "ROI (Return on Investment)", back: { def: "How much profit is gained from an investment.", ex: "Spending $100 on ads and making $300 in sales." } },
+  { cat: "terms", front: "B2B (Business-to-Business)", back: { def: "Companies selling products or services to other companies.", ex: "A software company selling tools to another business." } },
+  { cat: "terms", front: "B2C (Business-to-Consumer)", back: { def: "Companies selling directly to individual customers.", ex: "A clothing store selling shirts to shoppers." } },
+  { cat: "terms", front: "Supply Chain", back: { def: "All steps involved in making and delivering a product.", ex: "From raw materials → factory → warehouse → store." } },
+  { cat: "terms", front: "Logistics", back: { def: "Planning and managing the movement of goods.", ex: "Delivering packages from a warehouse to homes." } },
+  { cat: "terms", front: "Inventory", back: { def: "The products a company has ready to sell.", ex: "A store keeps inventory of shoes in different sizes." } },
+  { cat: "terms", front: "Outsourcing", back: { def: "Hiring another company to do work instead of doing it internally.", ex: "Outsourcing customer support to a call center." } },
+  { cat: "terms", front: "Freelancer", back: { def: "An independent worker hired for specific projects.", ex: "A company hires a freelance designer for a new logo." } },
+  { cat: "terms", front: "Contract", back: { def: "A legal agreement between two or more parties.", ex: "A contract states how much a freelancer will be paid." } },
+  { cat: "terms", front: "Negotiation", back: { def: "Discussions to reach an agreement.", ex: "A supplier and a store negotiate product prices." } },
+  { cat: "terms", front: "Leadership", back: { def: "The ability to guide and motivate people.", ex: "A manager who inspires employees shows leadership." } },
+  { cat: "terms", front: "Management", back: { def: "Coordinating and overseeing business activities.", ex: "Managing schedules and organizing tasks." } },
+  { cat: "terms", front: "HR (Human Resources)", back: { def: "The department responsible for recruiting, training, and employee relations.", ex: "HR hires new workers and manages payroll." } },
+  { cat: "terms", front: "Recruitment", back: { def: "Finding and hiring new employees.", ex: "Posting job ads and interviewing candidates." } },
+  { cat: "terms", front: "Training", back: { def: "Teaching employees new skills or knowledge.", ex: "Training a new worker on how to use company software." } },
+  { cat: "terms", front: "Teamwork", back: { def: "Working together to achieve a shared goal.", ex: "A team collaborates to finish a project on time." } },
+  { cat: "terms", front: "Deadline", back: { def: "The final date or time something must be completed.", ex: "A report must be finished by Friday." } },
+  { cat: "terms", front: "Goal", back: { def: "A desired result a business wants to achieve.", ex: "Increasing sales by 10% this year." } },
+  { cat: "terms", front: "Strategy", back: { def: "A long-term plan to reach goals.", ex: "Increase the advertisement budget in order to increase the sales." } },
+  { cat: "terms", front: "Mission Statement", back: { def: "A short description of a company's purpose, values, and what it aims to do every day.", ex: "'To provide affordable, healthy meals to every family.'" } },
+  { cat: "terms", front: "Vision Statement", back: { def: "A future-focused statement explaining what the company wants to become.", ex: "'To be the world's most trusted sustainable food brand.'" } },
+  { cat: "terms", front: "SWOT Analysis", back: { def: "A tool to study a company's strengths, weaknesses, opportunities, and threats.", ex: "A business reviews its strong customer service (strength) and new competitors (threat)." } },
+  { cat: "terms", front: "Competitor", back: { def: "Another business that offers similar products or services.", ex: "Coca-Cola and Pepsi are competitors." } },
+  { cat: "terms", front: "Market Research", back: { def: "Collecting information about customers, competitors, and market conditions.", ex: "A company surveys customers to learn what features they want." } },
+  { cat: "terms", front: "Pricing Strategy", back: { def: "The method a company uses to set product prices.", ex: "A new restaurant sets lower prices at opening to attract customers." } },
+  { cat: "terms", front: "Break-even Point", back: { def: "When total revenue equals total costs — no profit, no loss.", ex: "A bakery must sell 100 cupcakes per day to break even." } },
+  { cat: "terms", front: "Partnership", back: { def: "A business owned by two or more people who share profits and responsibilities, or when two companies decide to work together for mutual benefits.", ex: "Two friends open a small coffee shop together." } },
+  { cat: "terms", front: "Corporation", back: { def: "A large company that is legally separate from the people who own it.", ex: "Google is a corporation." } },
+  { cat: "terms", front: "Franchise", back: { def: "A business that uses another company's brand, products, and business model by paying fees.", ex: "Someone opens a Carl's Jr restaurant as a franchisee." } },
+  { cat: "terms", front: "Merger", back: { def: "When two companies join together to form one company.", ex: "Two airlines combine to become a larger airline." } },
+  { cat: "terms", front: "Acquisition", back: { def: "When one company buys another company.", ex: "Facebook buying Instagram." } },
+  { cat: "terms", front: "Entrepreneurship", back: { def: "The process of starting and running a business.", ex: "Launching a new online clothing brand." } },
+  { cat: "terms", front: "Networking", back: { def: "Building professional relationships for opportunities and support.", ex: "Meeting other business owners at a conference." } },
+  { cat: "terms", front: "Pitch", back: { def: "A short, persuasive presentation to attract customers or investors.", ex: "A startup founder explains her app to investors in a 2-minute pitch." } },
+  { cat: "terms", front: "Funding", back: { def: "Money that supports the start or growth of a business.", ex: "A business receives $50,000 from an investor." } },
+  { cat: "terms", front: "Venture Capital", back: { def: "Investment from firms or wealthy individuals given to high-growth startups.", ex: "A tech startup gets $1 million from a venture capital firm." } },
+  { cat: "terms", front: "Risk Management", back: { def: "Identifying and reducing possible problems that could hurt the business.", ex: "A company buys insurance to protect against accidents." } },
+  { cat: "terms", front: "Compliance", back: { def: "Following legal rules, industry regulations, and company policies.", ex: "A pharmacy follows government safety laws for selling medicine." } },
+  { cat: "terms", front: "Corporate Culture", back: { def: "The shared values, behaviors, and attitudes in a company.", ex: "A business that encourages teamwork and creativity has a positive culture." } },
+  { cat: "terms", front: "Productivity", back: { def: "How efficiently work is done, usually measured by output.", ex: "Completing more tasks in less time shows higher productivity." } },
+  { cat: "terms", front: "Remote Work", back: { def: "Working from home or anywhere outside the office.", ex: "Employees use Zoom to work from home." } },
+  { cat: "terms", front: "Hybrid Work", back: { def: "A mix of working in the office and working remotely.", ex: "Employees go to the office three days per week and work from home two days." } },
+  { cat: "terms", front: "CRM (Customer Relationship Management)", back: { def: "Tools and strategies to track customer interactions and improve relationships.", ex: "A company uses a CRM system like Salesforce to organize customer data." } },
+  { cat: "terms", front: "SaaS (Software as a Service)", back: { def: "Software accessed online by subscription instead of installation.", ex: "Using Canva or Google Workspace." } },
+  { cat: "terms", front: "Cloud Computing", back: { def: "Storing and accessing programs and data online instead of on a local computer.", ex: "Saving files on Google Drive." } },
+  { cat: "terms", front: "Data Analytics", back: { def: "Using data to identify patterns and make better business decisions.", ex: "A store analyzes sales data to find the most popular products." } },
+  { cat: "terms", front: "Cybersecurity", back: { def: "Protecting computers, networks, and data from digital attacks.", ex: "Using firewalls and strong passwords." } },
+  { cat: "terms", front: "Sustainability", back: { def: "Business practices that protect the environment and use resources responsibly.", ex: "A company switches to renewable energy." } },
+  { cat: "terms", front: "Quality Assurance", back: { def: "Checking that products or services meet certain standards before selling them.", ex: "Testing phones for defects before shipping them." } },
+
+  // ─── BUSINESS IDIOMS ─────────────────────────────────────────────
+  { cat: "idioms", front: "Get a business off the ground", back: { def: "To successfully launch or start a business so it is operating and open to the public.", ex: "After finding the right investors and securing enough capital, we finally got our business off the ground and opened our first store in California." } },
+  { cat: "idioms", front: "From the ground up", back: { def: "To build a business or project starting from zero, from the very beginning.", ex: "Have you read the news about the enterprising 12-year-old who's building her business from the ground up?" } },
+  { cat: "idioms", front: "Long shot", back: { def: "Something that has a very small chance of happening or succeeding.", ex: "Landing such a high-paying job is a long shot but I'm still going to give it a try." } },
+  { cat: "idioms", front: "Bring to the table", back: { def: "To bring something of use or benefit — such as skills or experience — to a job or business activity.", ex: "We need someone on the team who can bring project management experience to the table." } },
+  { cat: "idioms", front: "Learning the ropes", back: { def: "To learn how to do your job or a particular task, especially with no prior experience. 'Teach someone the ropes' means helping a new employee understand their role.", ex: "It's great but I've only been there for two weeks so I'm still learning the ropes. I've got a great manager who's been teaching me the ropes, so I'm learning quickly!" } },
+  { cat: "idioms", front: "Learning curve", back: { def: "The progress someone has to make to gain experience or learn a new skill set. A steep learning curve indicates the task may be difficult and take more effort.", ex: "She is welcome to join our team, but there will be a steep learning curve." } },
+  { cat: "idioms", front: "Win-win situation", back: { def: "A situation where everybody involved benefits from the outcome. Often used during negotiations where both parties receive something they need.", ex: "The deal is simple, we give them office space and they give us the new equipment that we need. It sounds like a win-win situation to me!" } },
+  { cat: "idioms", front: "Get down to business", back: { def: "To stop making small talk and start seriously focusing on the actual work at hand.", ex: "We've got plenty of topics to cover in today's meeting so let's get down to business." } },
+  { cat: "idioms", front: "Small talk", back: { def: "A polite conversation about unimportant things, often between people who are meeting for the first time.", ex: "I soon learned how to make small talk with people at formal receptions." } },
+  { cat: "idioms", front: "Go the extra mile", back: { def: "To give more effort or do more than what is expected of you.", ex: "Anyone would be glad to have Pam on their team. She's a great team player and is always willing to go the extra mile." } },
+  { cat: "idioms", front: "Smooth sailing", back: { def: "When everything is going well and without any problems.", ex: "Once the company overcame the country's bureaucracy, it was smooth sailing from then on." } },
+  { cat: "idioms", front: "A ballpark number / estimate / figure", back: { def: "Giving a very rough estimate of a value, time, or number when the specific amount is not yet known. A ballpark is very large, so it implies a wide range.", ex: "To give you a ballpark figure, the new project will take between one and three months to complete." } },
+  { cat: "idioms", front: "Overplay your hand", back: { def: "Being overly confident in your abilities or chances of success, which ends up working as a disadvantage.", ex: "Robert overplayed his hand and couldn't finish his work on time." } },
+  { cat: "idioms", front: "The big picture", back: { def: "To look at a situation as a whole rather than focusing only on the details.", ex: "He focused so much on small things that he failed to see the big picture and had to close his business." } },
+  { cat: "idioms", front: "In a nutshell", back: { def: "To give a summary about something, or to explain something using as few words as possible.", ex: "This book is about successful businesspeople and how they got there. In a nutshell, it's a manual of how to grow a successful business." } },
+  { cat: "idioms", front: "Gray area", back: { def: "A situation that is uncertain, with no clear rules, where it is difficult to say if something is right or wrong.", ex: "You have many good points in your proposal but there's one gray area we need to discuss." } },
+  { cat: "idioms", front: "Red tape", back: { def: "Excessive regulations and rules that you need to comply with before you can get your work done.", ex: "Our project is stalled because we ran into some red tape." } },
+  { cat: "idioms", front: "Back to square one", back: { def: "To start over, or to go back to the beginning.", ex: "I wish I'd saved my spreadsheet before the server crashed. Now I'm back to square one." } },
+  { cat: "idioms", front: "Walking papers", back: { def: "A notice that you are being fired or laid off from your job.", ex: "Did you hear? The boss just gave Brett his walking papers!" } },
+  { cat: "idioms", front: "The wrong end of the stick", back: { def: "A total misunderstanding of a situation, plan, or idea.", ex: "David is not in charge of this project… Sarah is. Seems like you got the wrong end of the stick." } },
+  { cat: "idioms", front: "Call it a day", back: { def: "When your work has been completed for the day, or when you decide to stop working on an activity.", ex: "Now that we've completed the outline for the new project, let's call it a day." } },
+
+  // ─── NEGOTIATION ─────────────────────────────────────────────────
+  { cat: "negotiation", front: "What is Negotiation?", back: { def: "Negotiation is when two or more parties with competing interests come to an agreement. Through back-and-forth bargaining activity, the parties can reach creative solutions to a potentially adversarial situation. Good negotiation skills can help you deal with these sometimes tense situations.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Type: Adversarial", back: { def: "In this type of negotiation, the parties openly compete against each other. Each party acknowledges that the stakes are high and that if one side wins, the other will lose. It can involve bad-faith negotiation tactics, where one party's dishonesty about willingness to negotiate can lead to breakdowns in the process.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Type: Distributive", back: { def: "Also known as a zero-sum negotiation or a win-lose negotiation, it is a negotiation over a fixed or finite resource. It requires any party's gain to come at the other's expense. This type requires clear priorities, persistence, and control over your emotions, as they can be contentious and difficult.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Type: Integrative", back: { def: "Also known as collaborative negotiation, it can occur when parties negotiate over more than one area or resource. This makes it possible for both parties to come out ahead — a win-win negotiation. In a win-win situation, while both parties may have to give something up, both can also gain something in the bargaining process.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Type: Multiparty", back: { def: "It involves more than two parties seeking a solution. The complexity of multiparty negotiations, which require careful organization, makes them challenging. However, more negotiating parties often means more opportunities for gain. This increases the odds of integrative outcomes, where all parties make concessions to reach a mutually beneficial result.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Type: Principled", back: { def: "It relies on the principles and standards of the negotiators to come to an integrative agreement. This is a preferred negotiation type, as it seeks to find a solution that works for all parties and to avoid hard bargaining or deception. A principled negotiator is always on the lookout for mutual gain.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Type: Team", back: { def: "It occurs when each party has a team of negotiators working together. Negotiation teams require coordination and specialization, and can challenge inexperienced negotiators. The distribution of responsibilities can lead to greater effectiveness from the team as a whole. This collaborative approach helps teams prevail in complex negotiations.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Strategy: BATNA", back: { def: "Best Alternative to a Negotiated Agreement. When both sides are steadfast and getting to a 'yes' is impossible, you must explore the BATNA, which establishes parameters for what happens if you can't reach an agreement. While a BATNA has more trade-offs than a successful resolution, it should ideally make concessions to both sides.", ex: "If a worker insists they need a raise to stay and the boss refuses, a BATNA might call for the worker to remain for six more months at the current rate and then leave. The employee has six months to find a better-paying job; the employer has six months to find a replacement." } },
+  { cat: "negotiation", front: "Negotiation Strategy: Body Language", back: { def: "A subtle yet effective strategy is to show negative body language when presented with an offer you don't like. For instance, visibly flinching at a lowball price may communicate your reaction on a more visceral level than any vocal response and may cause your partner to recalibrate. The best negotiators make strategic use of body language to simplify complex negotiations.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Strategy: Set an Expiration Date", back: { def: "If you believe you've made a reasonable offer, give your negotiating partner a deadline to accept it or walk away. Even if you present it as 'take it or leave it,' the other person may still come back with a counteroffer. Nonetheless, setting an expiration date forces the other side to get serious.", ex: "" } },
+  { cat: "negotiation", front: "Negotiation Strategy: Win-Win", back: { def: "In successful negotiations, you want both sides to feel as though they secured a win. An effective negotiator might view their work as problem-solving. Ask yourself: What do I want, and what does my negotiating partner want? How can we both come out ahead? Then, propose a deal that addresses both sides' needs and produces a better outcome.", ex: "" } },
+  { cat: "negotiation", front: "What are Negotiation Meetings?", back: { def: "When a company wants to make a deal with another company for a partnership, or in order to provide or receive a product or service, they use negotiation meetings. A negotiation meeting can be defined as an encounter face-to-face or via voice to negotiate a deal. The more complex or important the deal, the more you should prepare.", ex: "" } },
+  { cat: "negotiation", front: "How to Prepare for a Negotiation Meeting", back: { def: "1. Research the other party.\n2. Know the objective of this meeting for you as well as the other party.\n3. Have all the information you may need ready to be provided.\n4. Decide who are going to be the people in charge of the meeting.\n5. Know how much you're willing to concede or compromise.\n6. Know the limit of your authority.\n7. Create a strategy on how to conduct the meeting, plan the topics to discuss and their order, pick a place to conduct the meeting, and try to plan the length.", ex: "" } },
+  { cat: "negotiation", front: "What to Do During a Negotiation Meeting", back: { def: "1. Use the appropriate level of formality and tone.\n2. Try to get the least important points out of the way first.\n3. Try to build rapport with the other party during the meeting.\n4. Answer any doubts the other party may have and provide solutions for problems that may occur.\n5. Negotiate and try to reach an agreement.\n\n*Rapport: create a bond between people through empathetic communication.", ex: "" } },
+  { cat: "negotiation", front: "What to Do After a Negotiation Meeting", back: { def: "• If you reached a deal: fill up the necessary documentation and comply with your part of that deal.\n• If you didn't reach a deal or the other party didn't provide a definite answer: do a follow-up until you get an answer; be ready in case they want to alter some conditions.\n• If the meeting was not successful: review what you could have done better, or if the deal didn't really benefit your party, look for another business partner.", ex: "" } },
+  { cat: "negotiation", front: "What is Rapport? (Negotiation)", back: { def: "Rapport means creating a bond between people through empathetic communication. Building rapport with the other party during a negotiation meeting is an important step toward reaching a successful agreement.", ex: "" } },
+
+  // ─── JOB INTERVIEW ───────────────────────────────────────────────
+  { cat: "interview", front: "Interview Q1: Could you tell me about yourself and describe your background in brief?", back: { def: "Interviewers like to hear stories about candidates. Make sure your story has a great beginning, a riveting middle, and an end that makes the interviewer root for you to win the job.", ex: "" } },
+  { cat: "interview", front: "Interview Q2: How did you hear about this position?", back: { def: "Employers want to know whether you are actively seeking out their company, heard of the role from a recruiter, or were recommended to the position by a current employee. In short, they want to know how you got to them.", ex: "" } },
+  { cat: "interview", front: "Interview Q3: What type of work environment do you prefer?", back: { def: "Be sure to do your homework on the organization and its culture before the interview. Your research will save you here. Your preferred environment should closely align to the company's workplace culture (and if it doesn't, it may not be the right fit for you).", ex: "" } },
+  { cat: "interview", front: "Interview Q4: How do you deal with pressure or stressful situations?", back: { def: "The employer wants to know: Do you hold down the fort or crumble under pressure? They want to make sure that you won't have a meltdown when the pressure becomes intense and deadlines are looming.", ex: "" } },
+  { cat: "interview", front: "Interview Q5: Do you prefer working independently or on a team?", back: { def: "Your answer should be informed by the research you've done on the company culture and the job in question. Nevertheless, you should expect that most work environments will have some team aspect.", ex: "" } },
+  { cat: "interview", front: "Interview Q6: When you're balancing multiple projects, how do you keep yourself organized?", back: { def: "Employers want to understand how you use your time and energy to stay productive and efficient. They're also looking to understand if you have your own system for staying on track with the work beyond the company's schedules and workflow plans. Be sure to emphasize that you adhere to deadlines and take them seriously.", ex: "" } },
+  { cat: "interview", front: "Interview Q7: What did you do in the last year to improve your knowledge?", back: { def: "Employers want to know how people used their time differently. Know that you don't have to feel scared about answering this question if you didn't spend your time brushing up on skills or taking courses.", ex: "" } },
+  { cat: "interview", front: "Interview Q8: What are your salary expectations?", back: { def: "Employers will always ask this question because every position is budgeted, and they want to ensure your expectations are consistent with that budget before moving forward.", ex: "" } },
+  { cat: "interview", front: "Interview Q9: Are you applying for other jobs?", back: { def: "Interviewers want to know if you're genuinely interested in this position or if it's just one of your many options. Honesty is the best policy. If you're applying for other jobs, say so. You don't have to say where you're applying unless you have another offer. But they might want to know where in the hiring process you are with other companies.", ex: "" } },
+  { cat: "interview", front: "Interview Q10: From your resume it seems you took a gap year. Would you like to tell us why that was?", back: { def: "Gap years are more popular in some cultures than others. In some professions, gap years may have a negative connotation (the industry moves too fast and you're not up to date).", ex: "" } },
+  { cat: "interview", front: "Bonus Interview Question: Do you have any questions for us?", back: { def: "Sometimes as a candidate you may have questions for the interviewer about the company, or other information you would like to know, so don't be afraid to ask.", ex: "" } },
+];
+
+const catLabels = { terms: "Business Term", idioms: "Business Idiom", negotiation: "Negotiation", interview: "Job Interview" };
+const catTagClass = { terms: "tag-terms", idioms: "tag-idioms", negotiation: "tag-negotiation", interview: "tag-interview" };
+
+let activeFilter = "all";
+let searchQuery = "";
+let currentIndex = 0;
+let filtered = [];
+let isFlipped = false;
+
+function getFiltered() {
+  return ALL_CARDS.filter(c => {
+    const matchCat = activeFilter === "all" || c.cat === activeFilter;
+    if (!matchCat) return false;
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    const haystack = (c.front + " " + c.back.def + " " + (c.back.ex || "")).toLowerCase();
+    return haystack.includes(q);
+  });
+}
+
+function renderCard() {
+  const stage = document.getElementById("card-stage");
+  if (filtered.length === 0) {
+    stage.style.display = "none";
+    document.querySelector(".controls").style.display = "none";
+    document.querySelector(".progress-row").style.display = "none";
+    let nr = document.getElementById("no-results-msg");
+    if (!nr) { nr = document.createElement("p"); nr.id = "no-results-msg"; nr.className = "no-results"; nr.textContent = "No cards match your search."; stage.parentNode.insertBefore(nr, stage); }
+    return;
+  }
+  stage.style.display = "";
+  document.querySelector(".controls").style.display = "";
+  document.querySelector(".progress-row").style.display = "";
+  const nr = document.getElementById("no-results-msg");
+  if (nr) nr.remove();
+
+  const card = filtered[currentIndex];
+
+  // unflip
+  isFlipped = false;
+  stage.classList.remove("flipped");
+
+  // tag
+  const tagClass = catTagClass[card.cat];
+  document.getElementById("front-tag").className = "card-tag " + tagClass;
+  document.getElementById("front-tag").textContent = catLabels[card.cat];
+  document.getElementById("back-tag").className = "card-tag " + tagClass;
+  document.getElementById("back-tag").textContent = catLabels[card.cat];
+
+  // front
+  document.getElementById("front-term").textContent = card.front;
+
+  // back
+  const bc = document.getElementById("back-content");
+  bc.innerHTML = "";
+  if (card.back.def) {
+    const lbl = document.createElement("div"); lbl.className = "back-label"; lbl.textContent = card.cat === "idioms" ? "Meaning" : "Definition";
+    const txt = document.createElement("div"); txt.className = "back-text";
+    txt.style.whiteSpace = "pre-line";
+    txt.textContent = card.back.def;
+    bc.appendChild(lbl); bc.appendChild(txt);
+  }
+  if (card.back.ex) {
+    const lbl = document.createElement("div"); lbl.className = "back-label"; lbl.textContent = "Example";
+    const txt = document.createElement("div"); txt.className = "back-example";
+    txt.style.whiteSpace = "pre-line";
+    txt.textContent = card.back.ex;
+    bc.appendChild(lbl); bc.appendChild(txt);
+  }
+
+  // progress
+  const pct = filtered.length === 1 ? 100 : (currentIndex / (filtered.length - 1)) * 100;
+  document.getElementById("prog-fill").style.width = pct + "%";
+  document.getElementById("prog-label").textContent = "Card " + (currentIndex + 1) + " of " + filtered.length;
+
+  document.getElementById("btn-prev").disabled = currentIndex === 0;
+  document.getElementById("btn-next").disabled = currentIndex === filtered.length - 1;
+}
+
+function flip() {
+  isFlipped = !isFlipped;
+  document.getElementById("card-stage").classList.toggle("flipped", isFlipped);
+}
+
+document.getElementById("card-stage").addEventListener("click", flip);
+document.getElementById("btn-flip").addEventListener("click", flip);
+
+document.getElementById("btn-prev").addEventListener("click", () => {
+  if (currentIndex > 0) { currentIndex--; renderCard(); }
+});
+document.getElementById("btn-next").addEventListener("click", () => {
+  if (currentIndex < filtered.length - 1) { currentIndex++; renderCard(); }
+});
+document.getElementById("btn-random").addEventListener("click", () => {
+  if (filtered.length > 1) {
+    let r; do { r = Math.floor(Math.random() * filtered.length); } while (r === currentIndex);
+    currentIndex = r;
+  }
+  renderCard();
+});
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.cat;
+    currentIndex = 0;
+    filtered = getFiltered();
+    renderCard();
+  });
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  searchQuery = e.target.value.trim();
+  currentIndex = 0;
+  filtered = getFiltered();
+  renderCard();
+});
+
+document.addEventListener("keydown", e => {
+  if (document.activeElement === document.getElementById("search")) return;
+  if (e.key === "ArrowLeft" && currentIndex > 0) { currentIndex--; renderCard(); }
+  if (e.key === "ArrowRight" && currentIndex < filtered.length - 1) { currentIndex++; renderCard(); }
+  if (e.key === " " || e.key === "Enter") { e.preventDefault(); flip(); }
+});
+
+filtered = getFiltered();
+renderCard();
+</script>
+</body>
+</html>
